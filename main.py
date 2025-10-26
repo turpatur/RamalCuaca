@@ -10,6 +10,8 @@ import requests_cache
 from retry_requests import retry
 from datetime import datetime, timedelta, timezone
 from aiohttp import ClientSession
+from flask import Flask
+from threading import Thread
 
 
 load_dotenv()
@@ -22,6 +24,8 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='!p', intents=intents)
 URL = os.getenv('URL')
+
+app = Flask('')
 
 WEATHER_CODE_MAP = {
     0: "Clear sky ☀️",
@@ -124,6 +128,18 @@ async def get_weather(ctx):
     )
 
     await ctx.send(msg)
-    
+
+@app.route('/')
+def home():
+    return "Bot live"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
 if __name__ == "__main__":
+    keep_alive
     bot.run(token, log_handler=handler, log_level=logging.DEBUG)

@@ -6,3 +6,4 @@ requests-cache
 retry-requests 
 numpy 
 pandas
+flask
