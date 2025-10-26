@@ -100,7 +100,7 @@ async def get_weather(ctx):
 
     hourly = data["hourly"]
     df = pd.DataFrame({
-        "date": pd.to_datetime(hourly["time"], utc=True),  # 👈 ensure UTC-aware
+        "date": pd.to_datetime(hourly["time"], utc=True),
         "rain": hourly["rain"],
         "precipitation": hourly["precipitation"],
         "weather_code": hourly["weather_code"],
