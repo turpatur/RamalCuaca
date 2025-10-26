@@ -29,6 +29,7 @@ secrets.json
 *.log
 discord.log
 *.sqlite3
+*.sqlite
 *.db
 
 # Test / coverage / lint
