@@ -1,0 +1,8 @@
+discord.py
+python-dotenv
+aiohttp
+openmeteo-requests
+requests-cache 
+retry-requests 
+numpy 
+pandas

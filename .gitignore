@@ -1,0 +1,51 @@
+# ...existing code...
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Environment / secrets
+.env
+.env.*
+instance/
+local_settings.py
+secrets.json
+
+# Logs, DBs, and runtime files
+*.log
+discord.log
+*.sqlite3
+*.sqlite
+*.db
+
+# Test / coverage / lint
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+
+# IDE/editor
+.vscode/
+.idea/
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
