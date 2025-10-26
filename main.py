@@ -124,5 +124,6 @@ async def get_weather(ctx):
     )
 
     await ctx.send(msg)
-
-bot.run(token, log_handler=handler, log_level=logging.DEBUG)
+    
+if __name__ == "__main__":
+    bot.run(token, log_handler=handler, log_level=logging.DEBUG)
