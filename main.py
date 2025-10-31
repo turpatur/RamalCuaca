@@ -110,8 +110,9 @@ async def get_weather(ctx):
         "weather_code": hourly["weather_code"],
     }).set_index("date").sort_index()
 
-    # interpolate per-minute and find nearest to current UTC time
-    interp_df = df.resample("1min").interpolate(method="linear")
+    interp_df = df[["rain", "precipitation"]].resample("1min").interpolate(method="linear")
+    weather_code_nearest = df["weather_code"].resample("1min").ffill()
+    interp_df["weather_code"] = weather_code_nearest
     nearest_idx = interp_df.index.get_indexer([now_utc], method="nearest")[0]
     weather_now = interp_df.iloc[[nearest_idx]]
     weather_now.index = weather_now.index.tz_convert(WIB)
