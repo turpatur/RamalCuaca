@@ -59,8 +59,8 @@ WEATHER_CODE_MAP = {
 }
 
 KOTA = {
-    "Depok": (-6.4025, 106.7949),
-    "Rumah Utan": (-6.4338752, 106.7751742)
+    "depok": (-6.4025, 106.7949),
+    "rumah-utan": (-6.4338752, 106.7751742)
 }
 
 @bot.event
@@ -81,7 +81,7 @@ async def get_fact(ctx):
 
 
 @bot.command(name="cuaca")
-async def get_weather(ctx, kota: str):
+async def get_weather(ctx, kota: str = "depok"):
     """Get current weather for <kota> using Open-Meteo API.""" 
     WIB = timezone(timedelta(hours=7))
     now_local = datetime.now(WIB)
@@ -131,7 +131,7 @@ async def get_weather(ctx, kota: str):
     weather_desc = WEATHER_CODE_MAP.get(code, f"Unknown ({code})")
 
     msg = (
-        f"📍 **Weather forecast (Depok)**\n"
+        f"📍 **Weather forecast ({kota})**\n"
         f"🕒 Time: `{weather_now.index[0].strftime('%Y-%m-%d %H:%M:%S %Z')}`\n"
         f"🌤 Condition: **{weather_desc}**\n"
         f"🌧 Rain: `{weather_now['rain'].iloc[0]:.2f} mm`\n"
