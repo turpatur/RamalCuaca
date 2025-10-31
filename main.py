@@ -58,6 +58,11 @@ WEATHER_CODE_MAP = {
     99: "Thunderstorm with heavy hail ⛈️",
 }
 
+KOTA = {
+    "Depok": (-6.4025, 106.7949),
+    "Rumah Utan": (-6.4338752, 106.7751742)
+}
+
 @bot.event
 async def on_ready():
     print("Aman le")
@@ -76,17 +81,22 @@ async def get_fact(ctx):
 
 
 @bot.command(name="cuaca")
-async def get_weather(ctx):
-    """Get current weather for Jakarta (GMT+7) using Open-Meteo API.""" 
+async def get_weather(ctx, kota: str):
+    """Get current weather for <kota> using Open-Meteo API.""" 
     WIB = timezone(timedelta(hours=7))
     now_local = datetime.now(WIB)
     now_utc = now_local.astimezone(timezone.utc)
     start_date = now_utc.strftime("%Y-%m-%d")
     end_date = (now_utc + timedelta(days=1)).strftime("%Y-%m-%d")
 
+    kota = kota.lower()
+    if kota not in [k.lower() for k in KOTA.keys()]:
+        await ctx.send(f"⚠️ Kota '{kota}' tidak dikenali. Pilihan: {', '.join(KOTA.keys())}")
+        return
+
     params = {
-        "latitude": -6.4,
-        "longitude": 106.8186,
+        "latitude": KOTA[kota][0],
+        "longitude": KOTA[kota][1],
         "hourly": "rain,precipitation,weather_code",
         "start_date": start_date,
         "end_date": end_date,
