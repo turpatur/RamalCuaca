@@ -81,8 +81,26 @@ async def get_fact(ctx):
 
 
 @bot.command(name="cuaca")
-async def get_weather(ctx, kota: str = "depok"):
+async def get_weather(ctx, *args):
     """Get current weather for <kota> using Open-Meteo API.""" 
+    
+    kota = "depok"
+    hours = 0
+
+    if len(args) == 1:
+        if args[0].isdigit():
+            hours = int(args[0])
+        else:
+            kota = args[0].lower()
+
+    elif len(args) >= 2:
+        kota = args[0].lower()
+        try:
+            hours = int(args[1])
+        except ValueError:
+            hours = 0
+
+
     WIB = timezone(timedelta(hours=7))
     now_local = datetime.now(WIB)
     now_utc = now_local.astimezone(timezone.utc)
@@ -123,22 +141,34 @@ async def get_weather(ctx, kota: str = "depok"):
     interp_df = df[["rain", "precipitation"]].resample("1min").interpolate(method="linear")
     weather_code_nearest = df["weather_code"].resample("1min").ffill()
     interp_df["weather_code"] = weather_code_nearest
-    nearest_idx = interp_df.index.get_indexer([now_utc], method="nearest")[0]
-    weather_now = interp_df.iloc[[nearest_idx]]
-    weather_now.index = weather_now.index.tz_convert(WIB)
 
-    code = round(float(weather_now["weather_code"].iloc[0]))
-    weather_desc = WEATHER_CODE_MAP.get(code, f"Unknown ({code})")
+    messages = [f"📍 **Weather forecast ({kota})**"]
+    for h in range(hours + 1):
+        target_time_utc = now_utc + timedelta(hours=h)
+        nearest_idx = interp_df.index.get_indexer([target_time_utc], method="nearest")[0]
+        weather_row = interp_df.iloc[[nearest_idx]]
+        weather_row.index = weather_row.index.tz_convert(WIB)
 
-    msg = (
-        f"📍 **Weather forecast ({kota})**\n"
-        f"🕒 Time: `{weather_now.index[0].strftime('%Y-%m-%d %H:%M:%S %Z')}`\n"
-        f"🌤 Condition: **{weather_desc}**\n"
-        f"🌧 Rain: `{weather_now['rain'].iloc[0]:.2f} mm`\n"
-        f"💧 Precipitation: `{weather_now['precipitation'].iloc[0]:.2f} mm`"
-    )
+        code = round(float(weather_row["weather_code"].iloc[0]))
+        weather_desc = WEATHER_CODE_MAP.get(code, f"Unknown ({code})")
 
-    await ctx.send(msg)
+        time_str = weather_row.index[0].strftime('%Y-%m-%d %H:%M:%S %Z')
+        rain = weather_row["rain"].iloc[0]
+        precip = weather_row["precipitation"].iloc[0]
+
+        if h == 0:
+            header = "🕒 Sekarang   "
+        else:
+            header = f"🕐 +{h} jam dari sekarang"
+
+        messages.append(
+            f"{header} (`{time_str}`)\n"
+            f"🌤 {weather_desc}\n"
+            f"🌧 Rain: `{rain:.2f} mm`\n"
+            f"💧 Precipitation: `{precip:.2f} mm`\n"
+        )
+
+    await ctx.send("\n".join(messages))
 
 @app.route('/')
 def home():
